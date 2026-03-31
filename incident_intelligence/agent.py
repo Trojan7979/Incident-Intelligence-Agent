@@ -57,6 +57,9 @@ Specifically, you must:
    incident in leadership-ready language. Example: "Auth service outage was
    caused by memory exhaustion, which cascaded into authentication failures
    across downstream services."
+   Keep this sentence causally consistent with your Trigger vs Root Cause
+   section. If database failures are the trigger and OOMKill is the root
+   cause, phrase the executive punch that way rather than reversing them.
 
 1. BUILD A CHRONOLOGICAL TIMELINE
    Reconstruct the sequence of events from the logs, earliest to latest.
