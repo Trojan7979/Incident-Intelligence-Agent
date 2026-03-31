@@ -101,7 +101,7 @@ gcloud run deploy incident-intelligence `
   --allow-unauthenticated
 ```
 
-If you prefer `adk deploy cloud_run`, make sure the Cloud Build and Compute Engine service accounts in this project have storage and build access first. Your earlier failure was an IAM issue, not an agent code issue.
+If you prefer `adk deploy cloud_run`, make sure the Cloud Build and Compute Engine service accounts in this project have storage and build access first. Failures could be related to was an IAM issues.
 
 ## Example Input
 
