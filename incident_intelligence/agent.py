@@ -183,7 +183,7 @@ unacceptable:
 
 root_agent = Agent(
     name="incident_intelligence",
-    model="gemini-2.0-flash",
+    model="gemini-2.5-flash",
     description=(
         "A senior SRE agent that transforms raw log dumps into "
         "postmortem-quality incident narratives with chronological "
