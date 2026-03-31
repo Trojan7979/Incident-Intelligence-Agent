@@ -25,4 +25,4 @@ USER myuser
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "adk api_server --host 0.0.0.0 --port ${PORT} --memory_service_uri=memory:// --session_service_uri=memory:// --artifact_service_uri=memory:// /app/agents"]
+CMD ["sh", "-c", "adk api_server --host 0.0.0.0 --port ${PORT} --memory_service_uri=memory:// --session_service_uri=memory:// --artifact_service_uri=memory:// --auto_create_session /app/agents"]
