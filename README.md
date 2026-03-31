@@ -52,7 +52,7 @@ Create `.env` from `.env.example` and set:
 
 ```env
 GOOGLE_API_KEY=your_api_key_here
-GOOGLE_CLOUD_PROJECT=primeval-camera-491818-h0
+GOOGLE_CLOUD_PROJECT=<your_cloud_project_id>
 GOOGLE_CLOUD_LOCATION=us-central1
 ```
 
@@ -93,15 +93,35 @@ This repository includes a Dockerfile that runs the ADK API server on port `8080
 ### Deploy
 
 ```powershell
-gcloud builds submit --tag us-central1-docker.pkg.dev/primeval-camera-491818-h0/cloud-run-source-deploy/incident-intelligence
-gcloud run deploy incident-intelligence `
-  --image us-central1-docker.pkg.dev/primeval-camera-491818-h0/cloud-run-source-deploy/incident-intelligence `
+gcloud run deploy incident-intelligence-agent `
+  --source . `
   --region us-central1 `
   --project primeval-camera-491818-h0 `
   --allow-unauthenticated
 ```
 
-If you prefer `adk deploy cloud_run`, make sure the Cloud Build and Compute Engine service accounts in this project have storage and build access first. Failures could be related to was an IAM issues.
+If you prefer `adk deploy cloud_run`, make sure the Cloud Build and Compute Engine service accounts in this project have storage and build access first. Most deployment failures during setup are IAM or API-enablement issues.
+
+## Live Endpoint
+
+- Cloud Run URL: `https://incident-intelligence-agent-623185507607.us-central1.run.app`
+- Health check: `GET /health`
+- App discovery: `GET /list-apps`
+- Agent execution: `POST /run`
+
+## Interactive API Docs
+
+Swagger UI is available at:
+
+- `https://incident-intelligence-agent-623185507607.us-central1.run.app/docs`
+
+The docs expose many ADK endpoints, but the core endpoints for this project are:
+
+- `GET /health`
+- `GET /list-apps`
+- `POST /run`
+
+For `POST /run`, use the sample request body from the Example Request section below.
 
 ## Example Input
 
@@ -118,6 +138,67 @@ If you prefer `adk deploy cloud_run`, make sure the Cloud Build and Compute Engi
 2024-03-15T14:34:01Z pod/gateway-nginx INFO upstream recovered: auth-service responding 200
 ```
 
+## Example Request
+
+### PowerShell
+
+```powershell
+$body = @{
+  appName = "incident_intelligence"
+  userId = "hackathon-user"
+  sessionId = "demo-1"
+  newMessage = @{
+    role = "user"
+    parts = @(
+      @{
+        text = @"
+2024-03-15T14:32:01Z pod/auth-service-7d4b8c ERROR Connection refused to postgres-primary:5432
+2024-03-15T14:32:05Z pod/auth-service-7d4b8c ERROR Pool exhausted: 0/20 connections available
+2024-03-15T14:32:12Z pod/gateway-nginx WARN upstream timeout (110s) reading response from auth-service
+2024-03-15T14:32:18Z pod/user-service-3a9f ERROR 503 from auth-service/v1/validate-token
+2024-03-15T14:32:22Z pod/order-service-8b2e ERROR 503 from auth-service/v1/validate-token
+2024-03-15T14:32:41Z alertmanager FIRING: AuthServiceDown severity=critical
+2024-03-15T14:33:15Z pod/auth-service-7d4b8c INFO Restarting after OOMKilled (exit code 137)
+2024-03-15T14:33:44Z pod/auth-service-7d4b8c INFO Connection established to postgres-primary:5432
+2024-03-15T14:33:52Z pod/auth-service-7d4b8c INFO Pool initialized: 20/20 connections available
+2024-03-15T14:34:01Z pod/gateway-nginx INFO upstream recovered: auth-service responding 200
+"@
+      }
+    )
+  }
+} | ConvertTo-Json -Depth 10
+
+$response = Invoke-RestMethod -UseBasicParsing `
+  -Uri "https://incident-intelligence-agent-623185507607.us-central1.run.app/run" `
+  -Method Post `
+  -ContentType "application/json" `
+  -Body $body
+
+$response.content.parts[0].text
+```
+
+### curl
+
+```bash
+curl -X POST "https://incident-intelligence-agent-623185507607.us-central1.run.app/run" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "appName": "incident_intelligence",
+    "userId": "hackathon-user",
+    "sessionId": "demo-1",
+    "newMessage": {
+      "role": "user",
+      "parts": [
+        {
+          "text": "2024-03-15T14:32:01Z pod/auth-service-7d4b8c ERROR Connection refused to postgres-primary:5432\n2024-03-15T14:32:05Z pod/auth-service-7d4b8c ERROR Pool exhausted: 0/20 connections available\n2024-03-15T14:32:12Z pod/gateway-nginx WARN upstream timeout (110s) reading response from auth-service\n2024-03-15T14:32:18Z pod/user-service-3a9f ERROR 503 from auth-service/v1/validate-token\n2024-03-15T14:32:22Z pod/order-service-8b2e ERROR 503 from auth-service/v1/validate-token\n2024-03-15T14:32:41Z alertmanager FIRING: AuthServiceDown severity=critical\n2024-03-15T14:33:15Z pod/auth-service-7d4b8c INFO Restarting after OOMKilled (exit code 137)\n2024-03-15T14:33:44Z pod/auth-service-7d4b8c INFO Connection established to postgres-primary:5432\n2024-03-15T14:33:52Z pod/auth-service-7d4b8c INFO Pool initialized: 20/20 connections available\n2024-03-15T14:34:01Z pod/gateway-nginx INFO upstream recovered: auth-service responding 200"
+        }
+      ]
+    }
+  }'
+```
+
+The deployed service auto-creates sessions, so any `sessionId` value can be used for a one-shot request.
+
 ## Submission Fit
 
 This project matches the hackathon brief:
@@ -127,3 +208,4 @@ This project matches the hackathon brief:
 - One clearly defined task: incident-log analysis into a narrative report
 - Callable over HTTP through the ADK API server
 - Deployable to Cloud Run through the included container setup
+- Live endpoint and repository are both ready for submission
