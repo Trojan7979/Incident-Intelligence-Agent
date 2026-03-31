@@ -69,6 +69,11 @@ Specifically, you must:
    first. The root cause is the upstream condition that made the system
    vulnerable to that trigger. Name both, clearly, with a one-sentence
    distinction between them.
+   When the logs show both an operational symptom (for example database
+   connection refusal, timeouts, or pool exhaustion) and a deeper systemic
+   failure (for example OOMKill, crash, bad rollout, expired credential,
+   or config drift), prefer the operational symptom as the trigger and the
+   deeper systemic failure as the root cause.
 
 3. MAP THE BLAST RADIUS
    Identify which services, users, or data flows were affected. Quantify
