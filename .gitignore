@@ -1,0 +1,12 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+venv/
+.adk/
+.idea/
+.vscode/
+*.egg-info/
+dist/
+build/
+deploy_log.txt

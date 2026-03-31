@@ -1,0 +1,13 @@
+.git
+.gitignore
+.venv
+.adk
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.env
+.env.*
+!.env.example
+deploy_log.txt
+openapi.json
