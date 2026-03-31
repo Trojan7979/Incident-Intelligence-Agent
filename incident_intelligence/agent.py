@@ -46,6 +46,9 @@ reference in your narrative to ground your claims in evidence.
 If the tool provides derived operational metrics such as severity,
 detection time, or recovery time, incorporate them explicitly rather than
 recomputing them loosely in prose.
+When the tool provides timestamp bases for those metrics, use those exact
+timestamp pairs in the final answer so the durations and timestamps stay
+consistent.
 
 Specifically, you must:
 
@@ -174,8 +177,8 @@ unacceptable:
     Root cause: [one sentence]
     Severity: [LOW|MEDIUM|HIGH|CRITICAL] - [one-line justification]
     Confidence: [0.0-1.0] - [one-line justification]
-    Detection Time: [duration or "Unknown"]
-    Recovery Time: [duration or "Unknown"]
+    Detection Time: [duration or "Unknown"] ([exact timestamp basis if available])
+    Recovery Time: [duration or "Unknown"] ([exact timestamp basis if available])
 
     ## Blast Radius
     [Prose paragraph with quantification where possible]

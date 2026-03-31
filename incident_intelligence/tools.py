@@ -239,6 +239,7 @@ def analyze_log_structure(raw_logs: str) -> dict:
             latest_entry[0] if latest_entry else None
         ),
         "severity": severity,
+        "incident_start_timestamp": first_symptom[0] if first_symptom else None,
         "first_symptom_timestamp": first_symptom[0] if first_symptom else None,
         "detection_timestamp": first_detection[0] if first_detection else None,
         "recovery_timestamp": final_recovery[0] if final_recovery else None,
@@ -246,4 +247,14 @@ def analyze_log_structure(raw_logs: str) -> dict:
         "recovery_time_seconds": recovery_time_seconds,
         "detection_time_human": _format_duration_seconds(detection_time_seconds),
         "recovery_time_human": _format_duration_seconds(recovery_time_seconds),
+        "detection_time_basis": (
+            f"from {first_symptom[0]} to {first_detection[0]}"
+            if first_symptom and first_detection
+            else None
+        ),
+        "recovery_time_basis": (
+            f"from {first_symptom[0]} to {final_recovery[0]}"
+            if first_symptom and final_recovery
+            else None
+        ),
     }
